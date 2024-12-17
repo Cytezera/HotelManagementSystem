@@ -11,6 +11,7 @@
 using namespace std; 
 
 sql::Connection *con = nullptr; 
+string logInUsername; 
 
 string hashPassword(string password){
 	unsigned char hash[SHA256_DIGEST_LENGTH]; 
@@ -119,7 +120,37 @@ void registerAccount(){
 	cout << "User created " << endl; 
 }
 void logIn(){
+	string query  = "select * from users where username = ? ; " ;
+	string username, hashedPassword, actualPassword, password; 
+	sql::ResultSet* res; 
+	while (true){
+		cout << "Please insert your username: " << endl; 
+	       	cin >> username; 
+		sql::PreparedStatement* pstmt = con->prepareStatement(query); 
+		pstmt->setString(1,username); 
+		res = pstmt->executeQuery();  
+		if (res -> next()){
+			logInUsername = res->getString("username"); 
+			break ; 
+		}else {
+			cout << "Invalid username " << endl; 
+		}	
+				
+	}
+	actualPassword = res->getString("password"); 
+	while (true) {
 
+		cout << "Please insert your password: "  << endl; 
+		cin >> password; 
+		hashedPassword = hashPassword(password) ;
+		if (actualPassword == hashedPassword){
+			cout << "Log in successful" << endl; 
+			cout << "Hello " << logInUsername << endl ;   
+			menu();
+			return; 
+		}
+		cout << "Wrong pasword, please try again "  << endl; 
+	}
 }
 void landingPage(){
 
@@ -147,5 +178,4 @@ void landingPage(){
 int main() {
 	connectDatabase(); 
 	landingPage(); 
-	menu(); 
 }
