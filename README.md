@@ -1,1 +1,3 @@
 # Hotel Mangement System 
+
+This program is a hotel managment system whereby it allows the user to view available rooms, book a room and print their unpaid invoises. At the start of the program, the user will have to register an account or if they have an account, to just log in. The account password is hashed before being stored into the database. After logging in, the user can either view available rooms, book a room or print their invoice. When the user views a room, the user can select which date they would like to book to see the availability of each room. After booking the room, the room will be update as booked for the days where the user chooses to avoid other users from booking the same room in the same exact date. 

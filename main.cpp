@@ -80,8 +80,43 @@ void viewRoom(){
 	}
 }
 void bookRoom(){
+	int roomID; 
+	string checkInDate , checkOutDate ; 
+	string query = "insert into book (username, roomID, check_in_date , check_out_date, status ) values (? , ? , ? , ? , 'unpaid'); " ; 
+	cout << "Which room you would like to check in? (room_id) : " << endl; 
+	cin >> roomID ; 
+	cout << "When would you like to check in ? " << endl; 
+	cin >> checkInDate ; 
+	cout << "When would you like to check out? " << endl; 
+	cin >> checkOutDate ; 
+	try{
+		sql::PreparedStatement* pstmt = con->prepareStatement(query); 
+		pstmt->setString(1,logInUsername); 
+		pstmt->setInt(2, roomID) ;
+		pstmt ->setString (3, checkInDate) ; 
+		pstmt ->setString (4, checkOutDate) ; 
+		pstmt->executeUpdate(); 
+	}
+	catch ( sql::SQLException& e) {
+		cerr << "Error in booking room " << e.what() << endl; 
+	}
 }
 void generateInvoice(){
+	int roomId, days ; 
+	double cost; 
+	string query = "select roomID , DATEDIFF(check_out_date, check_in_date) as days, cost from book where username = ? and status = 'unpaid'; " ; 
+       	sql::PreparedStatement* pstmt = con->prepareStatement(query); 
+	pstmt->setString(1,logInUsername); 
+	sql::ResultSet* res = pstmt->executeQuery(); 
+	while (res -> next()) {
+		roomId = res->getInt("roomID"); 
+		days = res->getInt("days") ; 
+		cost = res->getDouble("cost") ; 
+		cout << "Room ID: " << roomId << endl; 
+		cout << "Number of nights " << days << endl; 
+		cout << "Amount: " << cost << "\n " << endl; 
+
+	}	
 }
 void menu(){
 	int userInput; 
@@ -190,6 +225,7 @@ void landingPage(){
 	while (true){
 		cout << "1. Register new account " << endl ;
 		cout << "2. Log in " << endl; 
+		cout << "3. Exit " << endl ;
 		cout << "Your choice : " ; 
 		cin >> userInput; 
 		switch(userInput){
@@ -200,6 +236,7 @@ void landingPage(){
 				logIn(); 
 				break; 
 			case 3: 
+				cout << "Turning off " << endl ;
 				return  ; 
 				
 			default:
