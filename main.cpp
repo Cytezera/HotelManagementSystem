@@ -46,6 +46,38 @@ void connectDatabase(){
 	}
 }
 void viewRoom(){
+	string checkInDate , checkOutDate; 
+	cout << "Please inert the date you would like to check in : " << endl ;
+	cin >> checkInDate ;
+	cout << "Please inesert the date you would like to check out : " << endl; 
+	cin >> checkOutDate; 
+	string	query =" select r.roomID, r.room_type "
+	       	"from rooms r "
+	       	"left join book b on r.roomID = b.roomID "
+	       	"AND ((b.check_in_date <= ? and b.check_out_date >= ? ) "
+		"OR (b.check_in_date <= ? and b.check_out_date >= ?) ) "
+	      	"where b.book_id is null;";	
+	try{
+		sql::PreparedStatement* pstmt = con->prepareStatement(query); 
+		pstmt->setString(1,checkInDate);
+		pstmt->setString(2,checkInDate); 
+		pstmt->setString(3,checkOutDate);
+		pstmt->setString(4,checkOutDate); 
+		sql::ResultSet* res = pstmt->executeQuery();	
+		cout << "Rooms available during these dates " << endl; 
+		while (res -> next()){
+
+			int roomID = res->getInt("roomID");
+			string roomType = res->getString("room_type");
+			cout << "Room ID: " << roomID << "\nRoom Type: " << roomType << endl; 
+			cout << "\n"; 
+		
+		}
+		delete pstmt ;
+		delete res; 
+	}catch (sql::SQLException& e) {
+		cerr << "Error getting rooms aviableble" << e.what() << endl; 
+	}
 }
 void bookRoom(){
 }
